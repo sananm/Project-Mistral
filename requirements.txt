@@ -1,0 +1,6 @@
+torch
+llama-cpp-python
+numpy
+pandas
+tensorflow
+scikit-learn
