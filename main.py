@@ -27,13 +27,13 @@ conversation = ConversationChain(
 
 
 response1 = conversation.predict(input="Hi, who are you?")
-# print(response1)
+print(response1)
 
 response2 = conversation.predict(input="What can you do?")
-# print(response2)
+print(response2)
 
 response3 = conversation.predict(input="What did I ask you earlier?")
-# print(response3)
+print(response3)
 
 response4 = conversation.predict(input="Did I also not ask you about your capabilities?")
 print(response4)
