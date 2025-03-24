@@ -1,5 +1,5 @@
 from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationSummaryMemory
 from langchain.chains import ConversationChain
 from dotenv import load_dotenv
 import os
@@ -16,7 +16,7 @@ llm = ChatOpenAI(
     openai_api_key=os.environ["OPENAI_API_KEY"]
 )
 
-memory = ConversationBufferMemory()
+memory = ConversationSummaryMemory(llm=llm)
 
 # Create a conversation chain with memory
 conversation = ConversationChain(
@@ -35,5 +35,5 @@ print(response2)
 response3 = conversation.predict(input="What did I ask you earlier?")
 print(response3)
 
-response4 = conversation.predict(input="Did I also not ask you about your capabilities?")
-print(response4)
+# response4 = conversation.predict(input="Did I also not ask you about your capabilities?")
+# print(response4)
