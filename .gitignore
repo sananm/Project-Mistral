@@ -1,2 +1,5 @@
 .venv
 .ipynb_checkpoints
+conversation_history.json
+summary_memory.txt
+conversation_summary.txt

@@ -1,10 +1,11 @@
-from langchain_community.chat_models import ChatOpenAI
-from langchain.memory import ConversationSummaryMemory
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory, ConversationSummaryMemory
 from langchain.chains import ConversationChain
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.schema import messages_to_dict, messages_from_dict
 from dotenv import load_dotenv
 import os
-
+import json
 
 # Set your custom endpoint
 os.environ["OPENAI_API_KEY"] = "not-needed"  # LM Studio doesn't require a real key
@@ -16,41 +17,43 @@ llm = ChatOpenAI(
     openai_api_base=os.environ["OPENAI_BASE_URL"],
     openai_api_key=os.environ["OPENAI_API_KEY"],
     streaming=True,
-    callbacks=[StreamingStdOutCallbackHandler()]
+    callbacks= [StreamingStdOutCallbackHandler()]
 )
-
-
-# Load existing conversation summary if available
-context = ""
-if os.path.exists("conversation_summary.txt"):
-    with open("conversation_summary.txt", "r") as file:
-        context = file.read()
-        if not context.strip():
-            context = "This is the first conversation, we weren't talking before this"
-
-
-# Initialize ConversationSummaryMemory with pre-loaded context
 memory = ConversationSummaryMemory(llm=llm)
 
+context = ""
+
+# Load and restore it into a new memory instance
+if os.path.exists("summary_memory.txt"):
+    with open("summary_memory.txt", "r") as f:
+        context = f.read()
+        print(context)
+
+    memory.buffer = context  # Restore the memory summary
 # Create a conversation chain with memory
 conversation = ConversationChain(
     llm=llm,
     memory=memory,
-    verbose=False  # Set to True to see detailed logs
+    verbose=True  # Set to True to see detailed logs
 )
 
 while True:
-    # Pass the context before each user input so the model knows what we were talking about
-    memory.save_context({"input": ""}, {"output": context})
+    # memory.save_context({"input":""}, {"output": context})
     user_input = input("You: ")
-    if user_input == "b6gd": # Exit code "bravo 6 going dark"
+    if user_input == "b6gd":
         break
+    print("\nviksit: ", end=" ")
     response = conversation.predict(input=user_input)
-    # Save the context after each user input
-    context=memory.load_memory_variables({})["history"]
-    print("Bot:", response)
-
+    context = memory.buffer
+    # print("Viksit: ",response)
     
 
-with open("conversation_summary.txt", "w") as file:
-    file.write(memory.load_memory_variables({})["history"])
+# Save the summary buffer to a file
+with open("summary_memory.txt", "w") as f:
+    f.write(memory.buffer)
+
+history = memory.chat_memory.messages
+with open("conversation_history.json", "w") as f:
+    json.dump(messages_to_dict(history), f)
+
+memory.clear()
