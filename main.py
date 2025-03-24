@@ -40,7 +40,7 @@ while True:
     # Pass the context before each user input so the model knows what we were talking about
     memory.save_context({"input": ""}, {"output": context})
     user_input = input("You: ")
-    if user_input == "exit":
+    if user_input == "b6gd": # Exit code "bravo 6 going dark"
         break
     response = conversation.predict(input=user_input)
     # Save the context after each user input
