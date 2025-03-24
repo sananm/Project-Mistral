@@ -1,5 +1,6 @@
 from langchain_community.chat_models import ChatOpenAI
 from langchain.memory import ConversationSummaryMemory
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationChain
 from dotenv import load_dotenv
 import os
@@ -13,7 +14,9 @@ llm = ChatOpenAI(
     temperature=0.7,
     model_name="mistral-7b-instruct-v0.3",  # Name doesn't matter much for LM Studio
     openai_api_base=os.environ["OPENAI_BASE_URL"],
-    openai_api_key=os.environ["OPENAI_API_KEY"]
+    openai_api_key=os.environ["OPENAI_API_KEY"],
+    streaming=True,
+    callbacks=[StreamingStdOutCallbackHandler()]
 )
 
 
