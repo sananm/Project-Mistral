@@ -1,12 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-
+from bot import GPT
 
 class UserInput(BaseModel):
     userId: int
     prompt: str
 
 app = FastAPI()
+
+viksit = GPT()
 
 items = {
     1 : "First Item",
@@ -28,12 +30,22 @@ async def read_item(id: int, q: str = None):
 @app.post("/ask")
 def getResponse(input: UserInput):
     print(input)
+    response = viksit.ask(input.prompt)
     return {
         "message": "Received the body",
         "userId": input.userId,
-        "prompt": input.prompt        
+        "prompt": input.prompt,
+        "response": response        
     }
 
+
+@app.post("/exit")
+def saveAndClose():
+    viksit.exit()
+    return {
+        "message" : "Saved successfully",
+        "status_code" : 200
+    }
 
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
